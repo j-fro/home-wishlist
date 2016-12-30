@@ -7,6 +7,7 @@ function enable() {
     // Set up event handlers
     $('.to-admin').on('click', showAdmin);
     $('.to-wishlist').on('click', showWishlist);
+    $('#newItemButton').on('click', addItem);
 }
 
 function showAdmin() {

@@ -1,0 +1,6 @@
+CREATE TABLE items (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    claimed BOOLEAN DEFAULT FALSE,
+    complete BOOLEAN DEFAULT FALSE
+);
