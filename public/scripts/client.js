@@ -1,5 +1,6 @@
 $(document).ready(function() {
     // Add event handlers
+    getItems();
     enable();
 });
 
@@ -12,14 +13,12 @@ function enable() {
 
 function showAdmin() {
     console.log('showing admin');
-    getItems();
     $('.view').hide();
     $('.admin').show();
 }
 
 function showWishlist() {
     console.log('showing wishlist');
-    getItems();
     $('.admin').hide();
     $('.view').show();
 }
@@ -86,8 +85,22 @@ function updateItem(itemToSend) {
 
 function displayView(itemArray) {
     console.log('displaying the view:', itemArray);
+    itemArray.forEach(function(item) {
+        var s = '<li data-id="' + item.id + '">' + item.name +
+        buttonBuilder('claim') + buttonBuilder('complete') + '</li>';
+        $('.view').find('.wishlist').append(s);
+    });
 }
 
 function displayAdmin(itemArray) {
     console.log('displaying the admin:', itemArray);
+    itemArray.forEach(function(item) {
+        var s = '<li data-id="' + item.id + '">' + item.name +
+        buttonBuilder('delete') + '</li>';
+        $('.admin').find('.wishlist').append(s);
+    });
+}
+
+function buttonBuilder(buttonType) {
+    return '<button class="' + buttonType + '">' + buttonType + '</button>';
 }
