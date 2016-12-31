@@ -1,0 +1,7 @@
+.is-claimed {
+    background-color: green;
+}
+
+.is-complete {
+    background-color: red;
+}

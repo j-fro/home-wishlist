@@ -9,6 +9,9 @@ function enable() {
     $('.to-admin').on('click', showAdmin);
     $('.to-wishlist').on('click', showWishlist);
     $('#newItemButton').on('click', addItem);
+    $(document).on('click', '.complete', completeItem);
+    $(document).on('click', '.claim', claimItem);
+    $(document).on('click', '.delete', deleteItem);
 }
 
 function showAdmin() {
@@ -53,6 +56,7 @@ function addItem() {
         success: function(response) {
             console.log('Response from server:', response);
             getItems();
+            $('#nameIn').val('');
         },
         error: function(error) {
             console.log("AJAX error:", error);
@@ -62,10 +66,22 @@ function addItem() {
 
 function completeItem() {
     console.log('completing an item', $(this));
+    var itemToSend = {
+        id: $(this).parent().data('id'),
+        changeType: 'complete',
+        changeValue: !($(this).data('value'))
+    };
+    updateItem(itemToSend);
 }
 
 function claimItem() {
     console.log('claiming an item', $(this));
+    var itemToSend = {
+        id: $(this).parent().data('id'),
+        changeType: 'claimed',
+        changeValue: !($(this).data('value'))
+    };
+    updateItem(itemToSend);
 }
 
 function updateItem(itemToSend) {
@@ -83,24 +99,55 @@ function updateItem(itemToSend) {
     });
 }
 
+function deleteItem() {
+    var itemToSend = {
+        id: $(this).parent().data('id')
+    };
+    $.ajax({
+        url: '/deleteItem',
+        type: 'DELETE',
+        data: itemToSend,
+        success: function(response) {
+            console.log('Response from server:', response);
+            getItems();
+        },
+        error: function(error) {
+            console.log("AJAX error:", error);
+        }
+    });
+}
+
 function displayView(itemArray) {
     console.log('displaying the view:', itemArray);
+    $('.view').find('.wishlist').html('');
     itemArray.forEach(function(item) {
         var s = '<li data-id="' + item.id + '">' + item.name +
-        buttonBuilder('claim') + buttonBuilder('complete') + '</li>';
+        buttonBuilder('claim', item.claimed) +
+        buttonBuilder('complete', item.complete) + '</li>';
         $('.view').find('.wishlist').append(s);
+        if(item.complete) {
+            $('.view').find('.wishlist').children().last().addClass('is-complete');
+        } else if (item.claimed) {
+            $('.view').find('.wishlist').children().last().addClass('is-claimed');
+        }
     });
 }
 
 function displayAdmin(itemArray) {
     console.log('displaying the admin:', itemArray);
+    $('.admin').find('.wishlist').html('');
     itemArray.forEach(function(item) {
         var s = '<li data-id="' + item.id + '">' + item.name +
-        buttonBuilder('delete') + '</li>';
+        buttonBuilder('delete', '') + '</li>';
         $('.admin').find('.wishlist').append(s);
+        if(item.complete) {
+            $('.admin').find('.wishlist').children().last().addClass('is-complete');
+        } else if (item.claimed) {
+            $('.admin').find('.wishlist').children().last().addClass('is-claimed');
+        }
     });
 }
 
-function buttonBuilder(buttonType) {
-    return '<button class="' + buttonType + '">' + buttonType + '</button>';
+function buttonBuilder(buttonType, buttonValue) {
+    return '<button class="' + buttonType + '" data-value="' + buttonValue + '">' + buttonType + '</button>';
 }
